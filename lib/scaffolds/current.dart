@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dotstar/models/server_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:http/http.dart' as http;
 
 import '../widgets/misc.dart';
@@ -16,7 +17,6 @@ class Current extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new CurrentState(uri, serverResult);
 }
-
 
 class CurrentState extends State<Current> {
   final TextStyle _biggerFont = new TextStyle(fontSize: 18.0);
@@ -58,9 +58,55 @@ class CurrentState extends State<Current> {
       case "boolean":
         _toggle(name, value as bool);
         break;
+      case "color":
+        showDialog(
+          context: context,
+          child: new AlertDialog(
+            title: new Text(name),
+            content: new SingleChildScrollView(
+              child: new ColorPicker(
+                pickerColor: new Color(int
+                    .parse((value as String).replaceFirst("#", ""), radix: 16)),
+                onColorChanged: (Color c) {
+                  var v = "${_toHex(c)}";
+                  _set(name, v);
+                },
+              ),
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  })
+            ],
+          ),
+        );
+        break;
       default:
         print("nyi");
         break;
+    }
+  }
+
+  _set(String name, String value) async {
+    try {
+      setState(() => serverResult = new ServerResult());
+      var response = (await http.put(
+        uri.resolve("set"),
+        headers: {"Content-Type": "application/json"},
+        body: JSON.encode({
+          "data": {name: value}
+        }),
+      ));
+      final jsonString = response.body;
+      final newJson = JSON.decode(jsonString);
+      setState(() {
+        serverResult = new ServerResult(data: newJson);
+      });
+    } catch (e) {
+      print("back to track");
+      Navigator.of(context).pop(new ServerResult(error: e));
     }
   }
 
@@ -81,5 +127,21 @@ class CurrentState extends State<Current> {
       print("back to track");
       Navigator.of(context).pop(new ServerResult(error: e));
     }
+  }
+
+  _toHex(Color c) {
+    var r = c.red.toRadixString(16);
+    if (r.length < 2) {
+      r = "0$r";
+    }
+    var g = c.green.toRadixString(16);
+    if (g.length < 2) {
+      g = "0$g";
+    }
+    var b = c.blue.toRadixString(16);
+    if (b.length < 2) {
+      b = "0$b";
+    }
+    return "#$r$g$b";
   }
 }
