@@ -21,3 +21,8 @@ desc "install android apk"
 task :install_android => [:build] do
   sh "adb install -r build/app/outputs/apk/release/app-release.apk"
 end
+
+desc 'stats'
+task :stats do
+  puts "lines: #{Dir.glob("**/*.dart").inject(0) {|memo, f|memo + File.read(f).split("\n").count}}"
+end
