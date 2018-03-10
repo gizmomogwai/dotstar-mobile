@@ -24,5 +24,16 @@ end
 
 desc 'stats'
 task :stats do
-  puts "lines: #{Dir.glob("**/*.dart").inject(0) {|memo, f|memo + File.read(f).split("\n").count}}"
+  require 'terminal-table'
+  total = 0
+  table = Terminal::Table.new(headings: ["File", "LOC"]) do |table|
+    Dir.glob('**/*.dart').each do |file|
+      lines = File.read(file).split("\n").count
+      total += lines
+      table.add_row([file, lines])
+    end
+  end
+  table.add_separator
+  table.add_row(["total", total])
+  puts table
 end
