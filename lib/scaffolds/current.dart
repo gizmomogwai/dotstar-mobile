@@ -50,7 +50,10 @@ class CurrentState extends State<Current> {
       );
     }
 
-    return new ProgressWidget();
+    return new Scaffold(
+      appBar: new AppBar(title: new Text("...")),
+      body: new ProgressWidget(),
+    );
   }
 
   _doOnTap(String name, String type, dynamic value) {
@@ -111,22 +114,7 @@ class CurrentState extends State<Current> {
   }
 
   _toggle(String name, bool value) async {
-    try {
-      setState(() => serverResult = new ServerResult());
-      var response = (await http.put(uri.resolve("set"),
-          headers: {"Content-Type": "application/json"},
-          body: JSON.encode({
-            "data": {name: !value}
-          })));
-      final jsonString = response.body;
-      final newJson = JSON.decode(jsonString);
-      setState(() {
-        serverResult = new ServerResult(data: newJson);
-      });
-    } catch (e) {
-      print("back to track");
-      Navigator.of(context).pop(new ServerResult(error: e));
-    }
+    _set(name, "${!value}");
   }
 
   _toHex(Color c) {
