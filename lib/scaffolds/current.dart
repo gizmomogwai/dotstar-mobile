@@ -119,18 +119,17 @@ class CurrentState extends State<Current> {
   }
 
   _toHex(Color c) {
-    var r = c.red.toRadixString(16);
-    if (r.length < 2) {
-      r = "0$r";
-    }
-    var g = c.green.toRadixString(16);
-    if (g.length < 2) {
-      g = "0$g";
-    }
-    var b = c.blue.toRadixString(16);
-    if (b.length < 2) {
-      b = "0$b";
-    }
+    var r = _toHexComponent(c.red);
+    var g = _toHexComponent(c.green);
+    var b = _toHexComponent(c.blue);
     return "#$r$g$b";
+  }
+  
+  _toHexComponent(int v) {
+    var res = v.toRadixString(16);
+    if (res.length < 2) {
+      return "0$res";
+    }
+    return res;
   }
 }
