@@ -74,6 +74,7 @@ class CurrentState extends State<Current> {
                   var v = "${_toHex(c)}";
                   _set(name, v);
                 },
+                enableLabel: false,
               ),
             ),
             actions: <Widget>[

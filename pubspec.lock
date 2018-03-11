@@ -117,7 +117,7 @@ packages:
       name: flutter_colorpicker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.1+1"
+    version: "0.0.3"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
@@ -178,7 +178,7 @@ packages:
       name: image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.29"
+    version: "1.1.30"
   io:
     dependency: transitive
     description:
@@ -456,7 +456,7 @@ packages:
       name: xml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.6.0"
+    version: "3.0.0"
   yaml:
     dependency: transitive
     description:
