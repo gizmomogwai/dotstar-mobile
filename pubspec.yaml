@@ -10,6 +10,8 @@ dependencies:
   flutter_launcher_icons: ^0.2.0
   rxdart: ^0.16.0+1
   flutter_colorpicker: any
+  mdns: any
+  path_provider: ^0.4.0
 
 dev_dependencies:
   flutter_test:
