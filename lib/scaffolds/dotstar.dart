@@ -15,11 +15,9 @@ class Dotstar extends StatefulWidget {
 
 class DotstarState extends State<Dotstar> {
   ServerResult _serverResult;
-
+  ServiceInfo _info;
   Mdns _mdns;
   final _servers = new Map<String, ServiceInfo>();
-
-  ServiceInfo _info;
 
   DotstarState();
 
@@ -29,7 +27,7 @@ class DotstarState extends State<Dotstar> {
     _serverResult = new ServerResult();
 
     final discoveryCallbacks = new DiscoveryCallbacks(
-      onDiscovered: (ServiceInfo) {},
+      onDiscovered: (serviceInfo) {},
       onDiscoveryStarted: () {},
       onDiscoveryStopped: () {},
       onResolved: (ServiceInfo info) {
