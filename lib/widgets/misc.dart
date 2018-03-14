@@ -10,6 +10,9 @@ class ProgressWidget extends StatelessWidget {
 }
 
 Uri infoToUri(ServiceInfo i) {
+  if (i == null) {
+    return null;
+  }
   final newUri = Uri.parse("http:/${i.host}:${i.port}");
   return newUri;
 }

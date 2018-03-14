@@ -9,21 +9,21 @@ import 'package:http/http.dart' as http;
 import '../widgets/misc.dart';
 
 class Current extends StatefulWidget {
-  final uri;
+  final info;
   final serverResult;
 
-  Current(this.uri, this.serverResult);
+  Current(this.info, this.serverResult);
 
   @override
-  State<StatefulWidget> createState() => new CurrentState(uri, serverResult);
+  State<StatefulWidget> createState() => new CurrentState(info, serverResult);
 }
 
 class CurrentState extends State<Current> {
   final TextStyle _biggerFont = new TextStyle(fontSize: 18.0);
-  final Uri uri;
+  final info;
   var serverResult;
 
-  CurrentState(this.uri, this.serverResult);
+  CurrentState(this.info, this.serverResult);
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +97,7 @@ class CurrentState extends State<Current> {
     try {
       setState(() => serverResult = new ServerResult());
       var response = (await http.put(
-        uri.resolve("set"),
+        infoToUri(info).resolve("api/set"),
         headers: {"Content-Type": "application/json"},
         body: JSON.encode({
           "data": {name: value}
@@ -110,7 +110,7 @@ class CurrentState extends State<Current> {
       });
     } catch (e) {
       print("back to track");
-      Navigator.of(context).pop(new ServerResult(error: e));
+      Navigator.of(context).pop();
     }
   }
 

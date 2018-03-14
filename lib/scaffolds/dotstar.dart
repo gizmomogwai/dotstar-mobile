@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dotstar/models/server_result.dart';
 import 'package:dotstar/scaffolds/current.dart';
@@ -6,35 +8,83 @@ import 'package:dotstar/widgets/misc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
+import 'package:mdns/mdns.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Dotstar extends StatefulWidget {
   @override
-  createState() =>
-      new DotstarState(Uri.parse("http://192.168.0.181:4567/api/"));
+  createState() => new DotstarState();
 }
 
 class DotstarState extends State<Dotstar> {
-  final Uri uri;
   ServerResult _serverResult;
 
-  DotstarState(this.uri);
+  Mdns _mdns;
+  final _servers = new Map<String, ServiceInfo>();
+
+  ServiceInfo _info;
+
+  DotstarState();
 
   @override
   initState() {
     super.initState();
     _serverResult = new ServerResult();
+/*
+    final discoveryCallbacks = new DiscoveryCallbacks(
+      onDiscovered: (ServiceInfo info) {
+        print("Discovered ${info.toString()}");
+        setState(() {
+          print("DISCOVERY: Discovered ${info.toString()}");
+        });
+      },
+      onDiscoveryStarted: () {
+        print("Discovery started");
+      },
+      onDiscoveryStopped: () {
+        print("Discovery stopped");
+      },
+      onResolved: (ServiceInfo info) {
+        print("Resolved Service ${info.toString()}");
+        setState(() {
+          _servers[info.name] = info;
+        });
+      },
+    );
+    _mdns = new Mdns(discoveryCallbacks: discoveryCallbacks);
+    _mdns.startDiscovery("_dotstar._tcp");
+*/
+    _loadServiceInfo().then((ServiceInfo i) {
+      _setServiceInfo(i);
+      index();
+    });
+
     index();
+  }
+
+  _setServiceInfo(ServiceInfo i) {
+    setState(() {
+      print(i);
+
+      if (infoToUri(i) != infoToUri(_info)) {
+        _info = i;
+        _storeServiceInfo(_info);
+        index();
+      }
+    });
   }
 
   void index() async {
     try {
-      print("getting index");
-      setState(() => _serverResult = new ServerResult());
-      var url = uri.resolve("state");
-      final response = get(url).timeout(const Duration(seconds: 5));
-      final jsonString = (await response).body;
-      final json = JSON.decode(jsonString);
-      setState(() => _serverResult = new ServerResult(data: json));
+      if (_info != null) {
+        print("getting index");
+        setState(() => _serverResult = new ServerResult());
+        var url = infoToUri(_info).resolve("api/state");
+        final response = get(url).timeout(const Duration(seconds: 5));
+        final jsonString = (await response).body;
+        final json = JSON.decode(jsonString);
+        setState(() => _serverResult = new ServerResult(data: json));
+      }
     } catch (e) {
       setState(() {
         _serverResult = new ServerResult(error: e);
@@ -59,7 +109,7 @@ class DotstarState extends State<Dotstar> {
   void _activate(currentName) async {
     try {
       setState(() => _serverResult = new ServerResult());
-      var url = uri.resolve("activate");
+      var url = infoToUri(_info).resolve("api/activate");
       final response = post(
         url,
         headers: {"Content-Type": "application/json"},
@@ -67,18 +117,13 @@ class DotstarState extends State<Dotstar> {
       );
       final jsonString = (await response).body;
       final json = JSON.decode(jsonString);
-      ServerResult res = (await Navigator
-          .of(context)
-          .push(new MaterialPageRoute(builder: (context) {
-        return new Current(uri, new ServerResult(data: json));
-      })));
-      if (res == null) {
-        index();
-      }
-      if (res.error != null) {
-        throw res.error;
-      }
-      setState(() => _serverResult = res);
+      (await Navigator.of(context).push(new MaterialPageRoute(
+            builder: (context) {
+              return new Current(_info, new ServerResult(data: json));
+            },
+            maintainState: false,
+          )));
+      index();
     } catch (e) {
       setState(() => _serverResult = new ServerResult(error: e));
     }
@@ -96,7 +141,11 @@ class DotstarState extends State<Dotstar> {
   }
 
   Widget _appbar() {
-    return new Text("Dotstar@" + uri.toString());
+    if (_info == null) {
+      return new Text("Please select dotstar server");
+    } else {
+      return new Text("${_info.name}${_info.host}:${_info.port}");
+    }
   }
 
   final TextStyle _biggerFont = new TextStyle(fontSize: 18.0);
@@ -134,5 +183,26 @@ class DotstarState extends State<Dotstar> {
     }
 
     return new ProgressWidget();
+  }
+
+  Future<ServiceInfo> _loadServiceInfo() async {
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    final file = new File("$dir/serviceInfo.json");
+    final content = JSON.decode(await file.readAsString());
+    return new ServiceInfo(
+        content["name"], content["type"], content["host"], content["port"]);
+  }
+
+  Future _storeServiceInfo(ServiceInfo info) async {
+    final h = {
+      "name": info.name,
+      "type": info.type,
+      "host": info.host,
+      "port": info.port
+    };
+    final json = JSON.encode(h);
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    final file = new File("$dir/serviceInfo.json");
+    file.writeAsString(json);
   }
 }
