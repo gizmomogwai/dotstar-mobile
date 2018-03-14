@@ -142,6 +142,7 @@ class DotstarState extends State<Dotstar> {
         title: new Text(name),
         onTap: () {
           _selectDotstar(info);
+          Navigator.of(context).pop();
         },
       ));
     });
@@ -210,8 +211,7 @@ class DotstarState extends State<Dotstar> {
     String dir = (await getApplicationDocumentsDirectory()).path;
     final file = new File("$dir/serviceInfo.json");
     final content = JSON.decode(await file.readAsString());
-    return new ServiceInfo(
-        content["name"], content["type"], content["host"], content["port"]);
+    return ServiceInfo.fromMap(content);
   }
 
   Future _storeServiceInfo(ServiceInfo info) async {
