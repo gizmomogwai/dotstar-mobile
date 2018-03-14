@@ -29,6 +29,9 @@ class DotstarState extends State<Dotstar> {
     _serverResult = new ServerResult();
 
     final discoveryCallbacks = new DiscoveryCallbacks(
+      onDiscovered: (ServiceInfo) {},
+      onDiscoveryStarted: () {},
+      onDiscoveryStopped: () {},
       onResolved: (ServiceInfo info) {
         print("Resolved Service ${info.toString()}");
         setState(() {

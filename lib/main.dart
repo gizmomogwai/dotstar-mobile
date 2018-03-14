@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(new DotstarApp());
 
-
 class DotstarApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Startup Name Generator',
+      title: 'Dotstar',
       home: new Dotstar(),
     );
   }
