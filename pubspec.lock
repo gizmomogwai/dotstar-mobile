@@ -224,9 +224,11 @@ packages:
   mdns:
     dependency: "direct main"
     description:
-      name: mdns
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: development
+      resolved-ref: "8dea2b7bfb29a3e497eebd879fc293a0ab06bf6b"
+      url: "git://github.com/platinumjam/flutter_mdns.git"
+    source: git
     version: "0.0.1"
   meta:
     dependency: transitive

@@ -5,10 +5,8 @@ void main() => runApp(new DotstarApp());
 
 class DotstarApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Dotstar',
-      home: new Dotstar(),
-    );
-  }
+  Widget build(BuildContext context) => new MaterialApp(
+        title: 'Dotstar',
+        home: new Dotstar(),
+      );
 }
