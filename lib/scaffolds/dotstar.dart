@@ -30,7 +30,7 @@ class DotstarState extends State<Dotstar> {
   initState() {
     super.initState();
     _serverResult = new ServerResult();
-/*
+
     final discoveryCallbacks = new DiscoveryCallbacks(
       onDiscovered: (ServiceInfo info) {
         print("Discovered ${info.toString()}");
@@ -51,9 +51,10 @@ class DotstarState extends State<Dotstar> {
         });
       },
     );
+
     _mdns = new Mdns(discoveryCallbacks: discoveryCallbacks);
     _mdns.startDiscovery("_dotstar._tcp");
-*/
+
     _loadServiceInfo().then((ServiceInfo i) {
       _setServiceInfo(i);
       index();
@@ -64,8 +65,6 @@ class DotstarState extends State<Dotstar> {
 
   _setServiceInfo(ServiceInfo i) {
     setState(() {
-      print(i);
-
       if (infoToUri(i) != infoToUri(_info)) {
         _info = i;
         _storeServiceInfo(_info);
@@ -129,15 +128,37 @@ class DotstarState extends State<Dotstar> {
     }
   }
 
+  _selectDotstar(ServiceInfo info) {
+    _storeServiceInfo(info);
+    _setServiceInfo(info);
+  }
+
   @override
   Widget build(BuildContext context) {
+    var servers = new List<Widget>();
+    servers.add(new DrawerHeader(child: new Text("dotstar")));
+    _servers.forEach((name, info) {
+      servers.add(new ListTile(
+        title: new Text(name),
+        onTap: () {
+          _selectDotstar(info);
+        },
+      ));
+    });
+    servers.add(new AboutListTile());
+
     return new Scaffold(
-        appBar: new AppBar(title: _appbar()),
-        body: new Builder(
-          builder: (BuildContext c) {
-            return _progressOrContent(c);
-          },
-        ));
+      appBar: new AppBar(title: _appbar()),
+      body: new Builder(
+        builder: (BuildContext c) {
+          return _progressOrContent(c);
+        },
+      ),
+      drawer: new Drawer(
+          child: new ListView(
+        children: servers,
+      )),
+    );
   }
 
   Widget _appbar() {
