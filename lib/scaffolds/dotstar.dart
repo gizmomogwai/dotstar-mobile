@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dotstar/models/server_result.dart';
 import 'package:dotstar/scaffolds/current.dart';
@@ -9,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 import 'package:mdns/mdns.dart';
-import 'package:path_provider/path_provider.dart';
 
 class Dotstar extends StatefulWidget {
   @override
@@ -32,18 +29,6 @@ class DotstarState extends State<Dotstar> {
     _serverResult = new ServerResult();
 
     final discoveryCallbacks = new DiscoveryCallbacks(
-      onDiscovered: (ServiceInfo info) {
-        print("Discovered ${info.toString()}");
-        setState(() {
-          print("DISCOVERY: Discovered ${info.toString()}");
-        });
-      },
-      onDiscoveryStarted: () {
-        print("Discovery started");
-      },
-      onDiscoveryStopped: () {
-        print("Discovery stopped");
-      },
       onResolved: (ServiceInfo info) {
         print("Resolved Service ${info.toString()}");
         setState(() {
@@ -55,19 +40,17 @@ class DotstarState extends State<Dotstar> {
     _mdns = new Mdns(discoveryCallbacks: discoveryCallbacks);
     _mdns.startDiscovery("_dotstar._tcp");
 
-    _loadServiceInfo().then((ServiceInfo i) {
+    loadServiceInfo().then((ServiceInfo i) {
       _setServiceInfo(i);
       index();
     });
-
-    index();
   }
 
   _setServiceInfo(ServiceInfo i) {
     setState(() {
       if (infoToUri(i) != infoToUri(_info)) {
         _info = i;
-        _storeServiceInfo(_info);
+        storeServiceInfo(_info);
         index();
       }
     });
@@ -117,36 +100,38 @@ class DotstarState extends State<Dotstar> {
       final jsonString = (await response).body;
       final json = JSON.decode(jsonString);
       (await Navigator.of(context).push(new MaterialPageRoute(
-            builder: (context) {
-              return new Current(_info, new ServerResult(data: json));
-            },
-            maintainState: false,
-          )));
+        builder: (context) {
+          return new Current(_info, new ServerResult(data: json));
+        },
+      )));
       index();
     } catch (e) {
       setState(() => _serverResult = new ServerResult(error: e));
     }
   }
 
-  _selectDotstar(ServiceInfo info) {
-    _storeServiceInfo(info);
-    _setServiceInfo(info);
-  }
-
   @override
   Widget build(BuildContext context) {
-    var servers = new List<Widget>();
-    servers.add(new DrawerHeader(child: new Text("dotstar")));
-    _servers.forEach((name, info) {
-      servers.add(new ListTile(
-        title: new Text(name),
-        onTap: () {
-          _selectDotstar(info);
-          Navigator.of(context).pop();
-        },
-      ));
-    });
-    servers.add(new AboutListTile());
+    List<Widget> servers = []
+      ..add(
+        new DrawerHeader(
+          child: new DecoratedBox(
+            decoration: new BoxDecoration(
+                image: new DecorationImage(
+                    image: new AssetImage("assets/strip.jpg"))),
+          ),
+        ),
+      )
+      ..addAll(_servers.keys.map((name) {
+        return new ListTile(
+          title: new Text(name),
+          onTap: () {
+            _setServiceInfo(_servers[name]);
+            Navigator.of(context).pop();
+          },
+        );
+      }))
+      ..add(new AboutListTile());
 
     return new Scaffold(
       appBar: new AppBar(title: _appbar()),
@@ -156,9 +141,10 @@ class DotstarState extends State<Dotstar> {
         },
       ),
       drawer: new Drawer(
-          child: new ListView(
-        children: servers,
-      )),
+        child: new ListView(
+          children: servers,
+        ),
+      ),
     );
   }
 
@@ -205,25 +191,5 @@ class DotstarState extends State<Dotstar> {
     }
 
     return new ProgressWidget();
-  }
-
-  Future<ServiceInfo> _loadServiceInfo() async {
-    String dir = (await getApplicationDocumentsDirectory()).path;
-    final file = new File("$dir/serviceInfo.json");
-    final content = JSON.decode(await file.readAsString());
-    return ServiceInfo.fromMap(content);
-  }
-
-  Future _storeServiceInfo(ServiceInfo info) async {
-    final h = {
-      "name": info.name,
-      "type": info.type,
-      "host": info.host,
-      "port": info.port
-    };
-    final json = JSON.encode(h);
-    String dir = (await getApplicationDocumentsDirectory()).path;
-    final file = new File("$dir/serviceInfo.json");
-    file.writeAsString(json);
   }
 }
