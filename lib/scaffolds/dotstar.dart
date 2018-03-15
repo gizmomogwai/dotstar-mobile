@@ -23,7 +23,7 @@ class DotstarState extends State<Dotstar> {
   DotstarState();
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _serverResult = new ServerResult();
 
@@ -43,13 +43,18 @@ class DotstarState extends State<Dotstar> {
       },
     );
 
-    _mdns = new Mdns(discoveryCallbacks: discoveryCallbacks);
-    _mdns.startDiscovery('_dotstar._tcp');
+    _mdns = new Mdns(discoveryCallbacks: discoveryCallbacks)
+        .startDiscovery('_dotstar._tcp');
 
     loadServiceInfo().then((ServiceInfo i) {
       _setServiceInfo(i);
       index();
     });
+  }
+
+  @override
+  void dispose() {
+    _mdns.stopDiscovery();
   }
 
   void _setServiceInfo(ServiceInfo i) {
@@ -80,7 +85,7 @@ class DotstarState extends State<Dotstar> {
     }
   }
 
-  void showErrorSnack(BuildContext c, Exception e) {
+  void showErrorSnack(BuildContext c, Exception e) async {
     Scaffold.of(c).showSnackBar(new SnackBar(
         content: new Text(
           e.toString(),
@@ -127,12 +132,12 @@ class DotstarState extends State<Dotstar> {
         ),
       )
       ..addAll(_servers.keys.map((name) => new ListTile(
-          title: new Text(name, style: biggerFont()),
-          onTap: () {
-            _setServiceInfo(_servers[name]);
-            Navigator.of(context).pop();
-          },
-        )))
+            title: new Text(name, style: biggerFont()),
+            onTap: () {
+              _setServiceInfo(_servers[name]);
+              Navigator.of(context).pop();
+            },
+          )))
       ..add(const AboutListTile());
 
     return new Scaffold(
@@ -158,12 +163,11 @@ class DotstarState extends State<Dotstar> {
 
   Widget _progressOrContent(BuildContext context) {
     if (_serverResult.error != null) {
-      try {
-        showErrorSnack(context, _serverResult.error);
-      } on Exception catch (e) {
-        print(e);
-      }
-      return new Text('error: ${_serverResult.error.toString()}');
+      showErrorSnack(context, _serverResult.error);
+      return new Container(
+        width: 0.0,
+        height: 0.0,
+      );
     }
 
     if (_serverResult.data != null) {
@@ -187,7 +191,6 @@ class DotstarState extends State<Dotstar> {
             ..add(current)
             ..addAll(renderers));
     }
-
     return new ProgressWidget();
   }
 }

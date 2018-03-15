@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 ///
 class ProgressWidget extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => const LinearProgressIndicator(value: null);
+  Widget build(BuildContext context) => new LinearProgressIndicator(value: null);
 }
 
 ///
