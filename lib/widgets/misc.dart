@@ -44,7 +44,6 @@ Future<ServiceInfo> loadServiceInfo() async {
   return ServiceInfo.fromMap(content);
 }
 
-///
 String toHex(Color c) {
   final r = _toHexComponent(c.red);
   final g = _toHexComponent(c.green);
@@ -58,4 +57,8 @@ String _toHexComponent(int v) {
     return '0$res';
   }
   return res;
+}
+
+TextStyle biggerFont() {
+  return const TextStyle(fontSize: 18.0);
 }

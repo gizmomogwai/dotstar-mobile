@@ -1,0 +1,3 @@
+* dotstar-mobile
+
+Mobile companion app for dotstar
