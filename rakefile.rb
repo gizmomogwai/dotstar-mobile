@@ -37,3 +37,12 @@ task :stats do
   table.add_row(["total", total])
   puts table
 end
+
+
+desc 'clean everything'
+task :clean do
+  sh "flutter clean"
+  sh "rm -rf ios/Flutter/Flutter.framework"
+  sh "rm -rf ios/Flutter/App.framework"
+  sh "rm -rf ~/Library/Developer/Xcode/DerivedData"
+end
