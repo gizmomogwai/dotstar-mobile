@@ -26,7 +26,7 @@ class DotstarState extends State<Dotstar> {
   void initState() {
     super.initState();
     _serverResult = new ServerResult();
-
+    _mdns = new Mdns();
     final discoveryCallbacks = new DiscoveryCallbacks(
       onDiscovered: (serviceInfo) {},
       onDiscoveryStarted: () {},
@@ -45,11 +45,10 @@ class DotstarState extends State<Dotstar> {
 
     _mdns = new Mdns(discoveryCallbacks: discoveryCallbacks)
         .startDiscovery('_dotstar._tcp');
-
     loadServiceInfo().then((ServiceInfo i) {
       _setServiceInfo(i);
-      index();
-    });
+    }).catchError((Exception e) => print(e));
+
   }
 
   @override
@@ -61,6 +60,9 @@ class DotstarState extends State<Dotstar> {
     setState(() {
       if (infoToUri(i) != infoToUri(_info)) {
         _info = i;
+        print(_info.name);
+        print(_info.host);
+        print(_info.port);
         storeServiceInfo(_info);
         index();
       }
@@ -73,13 +75,17 @@ class DotstarState extends State<Dotstar> {
         print('getting index');
         setState(() => _serverResult = new ServerResult());
         var url = infoToUri(_info).resolve('api/state');
-        final response = get(url).timeout(const Duration(seconds: 5));
+        final response = get(url).timeout(const Duration(seconds: 15));
         final jsonString = (await response).body;
+        print('got answer $jsonString');
         final Map<String, dynamic> json = JSON.decode(jsonString);
         setState(() => _serverResult = new ServerResult(data: json));
+      } else {
+        print('not getting index, because info is null');
       }
     } on Exception catch (e) {
       setState(() {
+        print(e);
         _serverResult = new ServerResult(error: e);
       });
     }
@@ -134,6 +140,7 @@ class DotstarState extends State<Dotstar> {
       ..addAll(_servers.keys.map((name) => new ListTile(
             title: new Text(name, style: biggerFont()),
             onTap: () {
+              print("setting service ${_servers[name].name}");
               _setServiceInfo(_servers[name]);
               Navigator.of(context).pop();
             },

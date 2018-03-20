@@ -5,15 +5,15 @@ dependencies:
   flutter:
     sdk: flutter  
   
-  # cupertino_icons: ^0.1.0
   http: any
-  # flutter_launcher_icons: ^0.2.0
-  # rxdart: ^0.16.0+1
   flutter_colorpicker: any
+#  mdns:
+#    git:
+#      url: git://github.com/gizmomogwai/flutter_mdns.git
+#      ref: development
   mdns:
-    git:
-      url: git://github.com/gizmomogwai/flutter_mdns.git
-      ref: development
+    path: /Users/gizmo/Dropbox/Documents/_projects/_dart/flutter_mdns
+
   path_provider: any
 
 dev_dependencies:

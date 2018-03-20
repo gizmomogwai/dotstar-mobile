@@ -14,12 +14,14 @@ class ProgressWidget extends StatelessWidget {
 }
 
 ///
+
 Uri infoToUri(ServiceInfo i) {
   if (i == null) {
     return null;
   }
-  final newUri = Uri.parse('http:/${i.host}:${i.port}');
-  return newUri;
+  final s = 'http:/${i.host}:${i.port}';
+  print("infoToUri: $s");
+  return Uri.parse(s);
 }
 
 ///
@@ -31,6 +33,7 @@ Future<void> storeServiceInfo(ServiceInfo info) async {
     'port': info.port
   };
   final json = JSON.encode(h);
+  print("storing: $json");
   final dir = (await getApplicationDocumentsDirectory()).path;
   final file = new File('$dir/serviceInfo.json');
   await file.writeAsString(json);

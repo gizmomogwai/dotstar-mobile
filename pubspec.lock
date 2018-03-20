@@ -182,11 +182,9 @@ packages:
   mdns:
     dependency: "direct main"
     description:
-      path: "."
-      ref: development
-      resolved-ref: "53a9c81b2ce36c22435a2b83450f64a18e5d58a0"
-      url: "git://github.com/gizmomogwai/flutter_mdns.git"
-    source: git
+      path: "/Users/gizmo/Dropbox/Documents/_projects/_dart/flutter_mdns"
+      relative: false
+    source: path
     version: "0.0.1"
   meta:
     dependency: transitive
