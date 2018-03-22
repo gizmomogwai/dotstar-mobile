@@ -96,7 +96,7 @@ class CurrentState extends State<Current> {
 
   Widget createSubtitle(Map<String, dynamic> property, String type,
       dynamic value, dynamic min, dynamic max) {
-    String name = property['name'];
+    final String name = property['name'];
     switch (type) {
       case 'float':
         return new Slider(

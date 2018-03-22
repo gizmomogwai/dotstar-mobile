@@ -20,7 +20,6 @@ Uri infoToUri(ServiceInfo i) {
     return null;
   }
   final s = 'http:/${i.host}:${i.port}';
-  print("infoToUri: $s");
   return Uri.parse(s);
 }
 
@@ -33,7 +32,7 @@ Future<void> storeServiceInfo(ServiceInfo info) async {
     'port': info.port
   };
   final json = JSON.encode(h);
-  print("storing: $json");
+  print('storing: $json');
   final dir = (await getApplicationDocumentsDirectory()).path;
   final file = new File('$dir/serviceInfo.json');
   await file.writeAsString(json);

@@ -54,6 +54,7 @@ class DotstarState extends State<Dotstar> {
   @override
   void dispose() {
     _mdns.stopDiscovery();
+    super.dispose();
   }
 
   void _setServiceInfo(ServiceInfo i) {
@@ -74,10 +75,13 @@ class DotstarState extends State<Dotstar> {
       if (_info != null) {
         print('getting index');
         setState(() => _serverResult = new ServerResult());
-        var url = infoToUri(_info).resolve('api/state');
-        final response = get(url).timeout(const Duration(seconds: 15));
-        final jsonString = (await response).body;
-        print('got answer $jsonString');
+        final url = infoToUri(_info).resolve('api/state');
+        final stopwatch = new Stopwatch()..start();
+        final response = await get(url).timeout(const Duration(seconds: 15));
+        print('getting in ${stopwatch.elapsed} ${stopwatch.elapsed}');
+        stopwatch.reset();
+        final jsonString = response.body;
+        print('got answer $jsonString in ${stopwatch.elapsed}');
         final Map<String, dynamic> json = JSON.decode(jsonString);
         setState(() => _serverResult = new ServerResult(data: json));
       } else {
@@ -106,13 +110,13 @@ class DotstarState extends State<Dotstar> {
   Future<void> _activate(String currentName) async {
     try {
       setState(() => _serverResult = new ServerResult());
-      var url = infoToUri(_info).resolve('api/activate');
-      final response = post(
+      final url = infoToUri(_info).resolve('api/activate');
+      final response = await post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: JSON.encode({'renderer': currentName}),
       );
-      final jsonString = (await response).body;
+      final jsonString = response.body;
       final Map<String, dynamic> json = JSON.decode(jsonString);
       await Navigator.of(context).push(new MaterialPageRoute(
         builder: (context) {
@@ -140,7 +144,7 @@ class DotstarState extends State<Dotstar> {
       ..addAll(_servers.keys.map((name) => new ListTile(
             title: new Text(name, style: biggerFont()),
             onTap: () {
-              print("setting service ${_servers[name].name}");
+              print('setting service ${_servers[name].name}');
               _setServiceInfo(_servers[name]);
               Navigator.of(context).pop();
             },
