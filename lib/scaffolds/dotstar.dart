@@ -73,9 +73,9 @@ class DotstarState extends State<Dotstar> {
   Future<void> index() async {
     try {
       if (_info != null) {
-        print('getting index');
         setState(() => _serverResult = new ServerResult());
         final url = infoToUri(_info).resolve('api/state');
+        print('getting index from $url');
         final stopwatch = new Stopwatch()..start();
         final response = await get(url).timeout(const Duration(seconds: 15));
         print('getting in ${stopwatch.elapsed} ${stopwatch.elapsed}');

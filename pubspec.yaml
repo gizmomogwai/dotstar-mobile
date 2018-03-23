@@ -12,7 +12,6 @@ dependencies:
     git:
       url: git://github.com/gizmomogwai/flutter_mdns.git
       ref: development
-#  mdns:
 #    path: /Users/gizmo/Dropbox/Documents/_projects/_dart/flutter_mdns
 
   path_provider: any
