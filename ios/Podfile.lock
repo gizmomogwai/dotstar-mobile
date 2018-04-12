@@ -1,4 +1,5 @@
 PODS:
+PODS:
   - Flutter (1.0.0)
   - mdns (0.0.1):
     - Flutter
@@ -6,15 +7,15 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - Flutter (from `Pods/.symlinks/flutter/ios-release`)
-  - mdns (from `Pods/.symlinks/plugins/flutter_mdns-13ede77b9e16a0f80c09b1676d556f91f5126326/ios`)
+  - Flutter (from `Pods/.symlinks/flutter/ios`)
+  - mdns (from `Pods/.symlinks/plugins/flutter_mdns-f04a29f5029834a8a8ad689e10a097e076741ed4/ios`)
   - path_provider (from `Pods/.symlinks/plugins/path_provider-0.4.0/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
-    :path: Pods/.symlinks/flutter/ios-release
+    :path: Pods/.symlinks/flutter/ios
   mdns:
-    :path: Pods/.symlinks/plugins/flutter_mdns-13ede77b9e16a0f80c09b1676d556f91f5126326/ios
+    :path: Pods/.symlinks/plugins/flutter_mdns-f04a29f5029834a8a8ad689e10a097e076741ed4/ios
   path_provider:
     :path: Pods/.symlinks/plugins/path_provider-0.4.0/ios
 

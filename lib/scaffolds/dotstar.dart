@@ -45,10 +45,9 @@ class DotstarState extends State<Dotstar> {
 
     _mdns = new Mdns(discoveryCallbacks: discoveryCallbacks)
         .startDiscovery('_dotstar._tcp');
-    loadServiceInfo().then((ServiceInfo i) {
-      _setServiceInfo(i);
-    }).catchError((Exception e) => print(e));
-
+    loadServiceInfo()
+        .then(_setServiceInfo)
+        .catchError(print);
   }
 
   @override
@@ -82,8 +81,8 @@ class DotstarState extends State<Dotstar> {
         stopwatch.reset();
         final jsonString = response.body;
         print('got answer $jsonString in ${stopwatch.elapsed}');
-        final Map<String, dynamic> json = JSON.decode(jsonString);
-        setState(() => _serverResult = new ServerResult(data: json));
+        final Map<String, dynamic> j = json.decode(jsonString);
+        setState(() => _serverResult = new ServerResult(data: j));
       } else {
         print('not getting index, because info is null');
       }
@@ -114,13 +113,13 @@ class DotstarState extends State<Dotstar> {
       final response = await post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: JSON.encode({'renderer': currentName}),
+        body: json.encode({'renderer': currentName}),
       );
       final jsonString = response.body;
-      final Map<String, dynamic> json = JSON.decode(jsonString);
-      await Navigator.of(context).push(new MaterialPageRoute(
+      final Map<String, dynamic> j = json.decode(jsonString);
+      await Navigator.of(context).push(new MaterialPageRoute<ServerResult>(
         builder: (context) {
-          return new Current(_info, new ServerResult(data: json));
+          return new Current(_info, new ServerResult(data: j));
         },
       ));
       index();
@@ -182,14 +181,15 @@ class DotstarState extends State<Dotstar> {
     }
 
     if (_serverResult.data != null) {
-      final renderers =
-          (_serverResult.data['renderers'] as List<Map<String, dynamic>>)
-              .map((r) => r['name'] as String)
-              .map((name) => new ListTile(
-                  title: new Text(name, style: biggerFont()),
-                  onTap: () {
-                    _activate(name);
-                  }));
+      final renderers = (_serverResult.data['renderers'] as List)
+          .cast<Map<String, dynamic>>()
+          .map((r) => r['name'] as String)
+          .map((name) => new ListTile(
+              title: new Text(name, style: biggerFont()),
+              onTap: () {
+                _activate(name);
+              }))
+          .toList();
       final String currentName = _serverResult.data['current']['name'];
       final current = new ListTile(
         title: new Text('current - $currentName', style: biggerFont()),
@@ -197,6 +197,7 @@ class DotstarState extends State<Dotstar> {
           _activate(currentName);
         },
       );
+
       return new ListView(
           children: []
             ..add(current)

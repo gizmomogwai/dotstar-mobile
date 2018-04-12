@@ -31,9 +31,10 @@ class CurrentState extends State<Current> {
     if (serverResult.data != null) {
       final json = serverResult.data;
       final newRenderer = json['current']['name'] as String;
-      final renderers = json['renderers'] as List<Map<String, dynamic>>;
-      final renderer = renderers.firstWhere((e) => e['name'] == newRenderer);
-      var jsonProperties = renderer['properties'] as List<Map<String, dynamic>>;
+      final renderer = (json['renderers'] as List)
+          .cast<Map<String, dynamic>>()
+          .firstWhere((e) => e['name'] == newRenderer);
+      final jsonProperties = (renderer['properties'] as List).cast<Map<String, dynamic>>();
       final properties = ListTile.divideTiles(
           context: context,
           tiles: jsonProperties.map((p) {
@@ -61,15 +62,15 @@ class CurrentState extends State<Current> {
 
   Future<void> _set(String name, String value) async {
     try {
-      var response = (await http.put(
+      final response = (await http.put(
         infoToUri(info).resolve('api/set'),
         headers: {'Content-Type': 'application/json'},
-        body: JSON.encode({
+        body: json.encode({
           'data': {name: value}
         }),
       ));
       final jsonString = response.body;
-      final Map<String, dynamic> newJson = JSON.decode(jsonString);
+      final Map<String, dynamic> newJson = json.decode(jsonString);
       setState(() {
         serverResult = new ServerResult(data: newJson);
       });
