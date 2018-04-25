@@ -7,7 +7,7 @@ dependencies:
   
   http: any
   flutter_colorpicker: any
-  flutter_launcher_icons: ^0.2.0
+  flutter_launcher_icons: ^0.2.1
   mdns:
     git:
       url: git://github.com/gizmomogwai/flutter_mdns.git
