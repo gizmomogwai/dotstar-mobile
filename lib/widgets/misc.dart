@@ -31,18 +31,18 @@ Future<void> storeServiceInfo(ServiceInfo info) async {
     'host': info.host,
     'port': info.port
   };
-  final json = JSON.encode(h);
+  final j = json.encode(h);
   print('storing: $json');
   final dir = (await getApplicationDocumentsDirectory()).path;
   final file = new File('$dir/serviceInfo.json');
-  await file.writeAsString(json);
+  await file.writeAsString(j);
 }
 
 /// 
 Future<ServiceInfo> loadServiceInfo() async {
   final dir = (await getApplicationDocumentsDirectory()).path;
   final file = new File('$dir/serviceInfo.json');
-  final Map<String, dynamic> content = JSON.decode(await file.readAsString());
+  final Map<String, dynamic> content = json.decode(await file.readAsString());
   return ServiceInfo.fromMap(content);
 }
 

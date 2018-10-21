@@ -1,5 +1,8 @@
 name: dotstar
 description: Application to control sdrip from mobiles.
+version: 1.0.0
+environment:
+  sdk: ">=2.0.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -7,12 +10,12 @@ dependencies:
   
   http: any
   flutter_colorpicker: any
-  flutter_launcher_icons: ^0.2.1
+  flutter_launcher_icons: ^0.6.1
   mdns:
     git:
       url: git://github.com/gizmomogwai/flutter_mdns.git
       ref: development
-#    path: /Users/gizmo/Dropbox/Documents/_projects/_dart/flutter_mdns
+    # path: /Users/gizmo/Dropbox/Documents/_projects/_dart/flutter_mdns
 
   path_provider: any
 
